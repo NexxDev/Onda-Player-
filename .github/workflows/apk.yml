@@ -1,0 +1,27 @@
+name: Crear APK
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Preparar app web
+        run: |
+          mkdir www
+          cp index.html manifest.webmanifest sw.js icon-*.png www/
+      - name: Crear proyecto Android
+        run: |
+          npm init -y
+          npm i @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
+          npx cap init Onda com.nexxdev.onda --web-dir=www
+          npx cap add android
+          npx cap sync android
+      - name: Compilar APK
